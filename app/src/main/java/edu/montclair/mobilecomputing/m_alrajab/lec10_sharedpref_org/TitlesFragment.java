@@ -3,6 +3,7 @@ package edu.montclair.mobilecomputing.m_alrajab.lec10_sharedpref_org;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import static edu.montclair.mobilecomputing.m_alrajab.lec10_sharedpref_org.utils.Utils.getFileByName;
+import static edu.montclair.mobilecomputing.m_alrajab.lec10_sharedpref_org.utils.Utils.getListFromFiles;
 import static edu.montclair.mobilecomputing.m_alrajab.lec10_sharedpref_org.utils.Utils.getListFromSP;
 
 
@@ -29,12 +32,21 @@ public class TitlesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.fragment_titles, container, false);
         ListView ls=(ListView)view.findViewById(R.id.list_frg);
+        //Using Shared Preference
+        /*ls.setAdapter(new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,
+                getListFromSP(getContext(),"Title_")));*/
+
+        //Using Files
         ls.setAdapter(new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,
-                getListFromSP(getContext(),"Title_")));
+                getListFromFiles(getContext())));
         ls.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mListener.onFragmentInteraction(getListFromSP(getContext(),"Body_")[i]);
+                /*Using Shared Preference
+                mListener.onFragmentInteraction(getListFromSP(getContext(),"Body_")[i]);*/
+
+                //Using Files
+                mListener.onFragmentInteraction(getFileByName(getContext(), getListFromFiles(getContext())[i]));
             }
         });
         return view;

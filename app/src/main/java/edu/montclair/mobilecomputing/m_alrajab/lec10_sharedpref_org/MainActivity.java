@@ -5,9 +5,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -15,6 +17,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.facebook.stetho.Stetho;
+
+import java.io.FileOutputStream;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,7 +68,7 @@ public class MainActivity extends AppCompatActivity
     class Lstnr implements View.OnClickListener{
         @Override
         public void onClick(View view) {
-
+            final View thisView = view;
             View viewGrp=getLayoutInflater().inflate(R.layout.costum_dialog_layout,
                     (ViewGroup) findViewById(R.id.activity_main), false);
 
@@ -73,16 +77,26 @@ public class MainActivity extends AppCompatActivity
             AlertDialog.Builder alertBuilder=new AlertDialog.Builder(MainActivity.this)
                     .setTitle("Take a note").setView(viewGrp)
 
-            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    tv.setText(noteTitle.getText());
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            tv.setText(noteTitle.getText());
 
-                    editor.putString(KEY_TITLE+count,noteTitle.getText().toString() );
-                    editor.putString(KEY_BODY+count++,noteBody.getText().toString() );
-                    editor.commit();
-                }
-            });
+                            //Using Files
+                            try{
+                                FileOutputStream outputStream = openFileOutput(noteTitle.getText().toString().replace(" ", ""), MODE_APPEND);
+                                outputStream.write(noteBody.getText().toString().getBytes());
+                                outputStream.close();
+                                Snackbar.make(thisView, "File Saved", Snackbar.LENGTH_SHORT).show();
+                            }catch (Exception e){
+                                Log.e("ERROR", e.getMessage());
+                            }
+                            /* Using Shared Preference
+                                 editor.putString(KEY_TITLE+count,noteTitle.getText().toString() );
+                                 editor.putString(KEY_BODY+count++,noteBody.getText().toString() );
+                                 editor.commit();*/
+                        }
+                    });
             alertBuilder.show();
         }
     }
